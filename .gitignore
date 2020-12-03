@@ -1,0 +1,6 @@
+.*
+!.gitignore
+!.htaccess
+!.editorconfig
+
+node_modules/
