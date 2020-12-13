@@ -15,7 +15,8 @@ class Imghaste_Slimcss extends Imghaste_Public
 
 		$options = get_option('imghaste_options');
 
-		$this->cache_version = intval($options["imghaste_field_slimcss_purgeversion"] ?? '1');
+		$this->cache_version = intval($options["imghaste_field_slimcss_purgeversion"]);
+		if (!$this->cache_version) $this->cache_version = 1;
 
 		//Crate the Cache
 		$this->cache = new SlimCache(SLIMCSS_CACHE_DIR, $this->cache_version);
@@ -125,7 +126,11 @@ class Imghaste_Slimcss extends Imghaste_Public
 			$cdn_url .= "minimal/" . home_url($this->cleanUrl($_SERVER['REQUEST_URI']));
 
 			//Add Get Variable for versioning
-			$purge_version = (parse_url($cdn_url, PHP_URL_QUERY) ? '&' : '?') . "slimcss_purgeversion=" . intval($options["imghaste_field_slimcss_purgeversion"] ?? '1');
+			$slimcss_purgeversion = $options["imghaste_field_slimcss_purgeversion"];
+			$slimcss_purgeversion = intval($slimcss_purgeversion);
+			if (!$slimcss_purgeversion) $slimcss_purgeversion = 1;
+			$purge_version = (parse_url($cdn_url, PHP_URL_QUERY) ? '&' : '?') . "slimcss_purgeversion={$slimcss_purgeversion}";
+
 			$cdn_url .= urlencode($purge_version);
 
 			//Get css from cache
