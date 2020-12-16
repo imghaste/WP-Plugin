@@ -234,7 +234,7 @@ class Imghaste_Slimcss extends Imghaste_Public
 			removeElementsByTagName('link', $doc);
 			$doc->normalizeDocument();
 			$buffered_content = @$doc->saveHTML($doc->documentElement);
-			return $buffered_content;
+			return '<!doctype html>'.$buffered_content;
 		}
 
 		//Buffer function to remove Styles and Links
