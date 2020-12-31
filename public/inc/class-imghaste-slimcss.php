@@ -16,6 +16,7 @@ class Imghaste_Slimcss extends Imghaste_Public
 		$options = get_option('imghaste_options');
 
 		if (!isset($options["imghaste_field_slimcss_purgeversion"])) $options["imghaste_field_slimcss_purgeversion"] = 1;
+
 		$this->cache_version = intval($options["imghaste_field_slimcss_purgeversion"]);
 		if (!$this->cache_version) $this->cache_version = 1;
 
