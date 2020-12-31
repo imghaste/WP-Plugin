@@ -3,7 +3,7 @@ Contributors: imghaste, Sociality
 Donate link: https://www.imghaste.com/
 Tags: WebP, Optimize Images, Compress Images, Service Worker, Image CDN, Client Hints
 Requires at least: 3.0.1
-Tested up to: 5.4.1
+Tested up to: 5.6.0
 Stable tag: trunk
 Requires PHP: 5.4
 License: GPLv2 or later

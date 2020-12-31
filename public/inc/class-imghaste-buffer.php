@@ -65,7 +65,7 @@ class Imghaste_Buffer extends Imghaste_Public
 		//Replace Style Background Url
 		$buffered_content = str_replace('background-image: url(' . $this->imghaste_get_site_url(), 'background-image: url(' . $options['imghaste_field_cdn_url'], $buffered_content);
 
-		return $buffered_content;
+		return '<!doctype html>'.$buffered_content;
 
 	}
 
