@@ -15,6 +15,8 @@ class Imghaste_Slimcss extends Imghaste_Public
 
 		$options = get_option('imghaste_options');
 
+		if (!isset($options["imghaste_field_slimcss_purgeversion"])) $options["imghaste_field_slimcss_purgeversion"] = 1;
+
 		$this->cache_version = intval($options["imghaste_field_slimcss_purgeversion"]);
 		if (!$this->cache_version) $this->cache_version = 1;
 
@@ -214,7 +216,9 @@ class Imghaste_Slimcss extends Imghaste_Public
 
 		function imghaste_slime_css_buffer_end()
 		{
-			ob_end_flush();
+			if (ob_get_length()) {
+				ob_end_flush();
+			}
 		}
 
 		function imghaste_slimcss_buffer_replace($content)
@@ -234,7 +238,7 @@ class Imghaste_Slimcss extends Imghaste_Public
 			removeElementsByTagName('link', $doc);
 			$doc->normalizeDocument();
 			$buffered_content = @$doc->saveHTML($doc->documentElement);
-			return '<!doctype html>'.$buffered_content;
+			return '<!doctype html>' . $buffered_content;
 		}
 
 		//Buffer function to remove Styles and Links

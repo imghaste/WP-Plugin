@@ -10,7 +10,7 @@
  * Plugin Name:       imghaste
  * Plugin URI:        imghaste
  * Description:       Get your images run with the speed of light all over the world.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            IMGHaste
  * Author URI:        https://www.imghaste.com/
  * License:           GPL-2.0+
@@ -27,7 +27,7 @@ if (!defined('WPINC')) {
 /**
  * Current plugin version.
  */
-define('IMGHASTE_VERSION', '1.1.0');
+define('IMGHASTE_VERSION', '1.1.1');
 
 
 /**
