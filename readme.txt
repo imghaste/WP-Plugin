@@ -177,6 +177,10 @@ and we be glad to investigate on your behalf.
 
 
 == Changelog ==
+= 1.1.1 =
+Fix some Noticed on error reporting
+Add html5 Doctype support for SlimCSS
+
 = 1.1.0 =
 Added SlimCSS Feature.
 Added Feature Policy for Client hints

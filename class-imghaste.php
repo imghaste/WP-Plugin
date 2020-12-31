@@ -69,7 +69,7 @@ class Imghaste
 	 */
 	public function __construct()
 	{
-		$this->version = '1.1.0';
+		$this->version = '1.1.1';
 		if (defined('IMGHASTE_VERSION')) {
 			$this->version = IMGHASTE_VERSION;
 		}
