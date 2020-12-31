@@ -10,7 +10,9 @@ class Imghaste_Buffer extends Imghaste_Public
 
 	public function imghaste_buffer_end()
 	{
-		ob_end_flush();
+		if (ob_get_length()) {
+			ob_end_flush();
+		}
 	}
 
 	public function imghaste_buffer_replace($content)
@@ -60,12 +62,12 @@ class Imghaste_Buffer extends Imghaste_Public
 
 		//Returned Buffered Content
 		$doc->normalizeDocument();
-		$buffered_content = @$doc->saveHTML( $doc->documentElement );
+		$buffered_content = @$doc->saveHTML($doc->documentElement);
 
 		//Replace Style Background Url
 		$buffered_content = str_replace('background-image: url(' . $this->imghaste_get_site_url(), 'background-image: url(' . $options['imghaste_field_cdn_url'], $buffered_content);
 
-		return '<!doctype html>'.$buffered_content;
+		return '<!doctype html>' . $buffered_content;
 
 	}
 
