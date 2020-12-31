@@ -1,7 +1,7 @@
-=== WebP, Image Optimization, CDN, Service Worker & Client Hints All in One ===
+=== AVIF, WebP, Image Optimization, CDN, Service Worker & Client Hints All in One ===
 Contributors: imghaste, Sociality
 Donate link: https://www.imghaste.com/
-Tags: WebP, Optimize Images, Compress Images, Service Worker, Image CDN, Client Hints
+Tags: AVIF, WebP, CDN, Service Worker, Client Hints
 Requires at least: 3.0.1
 Tested up to: 5.6.0
 Stable tag: trunk
@@ -48,8 +48,9 @@ that will load on your page is 708 <b>bytes</b> gzipped. (without a <b>k</b>)
 * Works with images coming from Ajax requests.
 * Compatible with Caching / Lazy Load plugins.
 * Backup your original image safely in the cloud.
+* Automatic AVIF Conversion based on browser support.
 * Automatic WebP Conversion based on browser support.
-* Progressive JPEGs & Interlaced PNGs as WebP fallback.
+* Progressive JPEGs & Interlaced PNGs as Net Gen fallback.
 
 <h1>FULLY WHITE-LABEL</h1>
 
@@ -117,7 +118,7 @@ We will be happy to see you grow, knowing that we played our small part.
 
 = How to verify the plugin works? =
 
-We get that a lot. Since the integration is fully white-labeled its hard to spot and we are proud for it. You will have to go to open your developer tools and check on network tab you will see your images having type: "WebP" instead of jpeg/png. Check Screenshot#2
+We get that a lot. Since the integration is fully white-labeled its hard to spot and we are proud for it. You will have to go to open your developer tools and check on network tab you will see your images having type: "webp" or "avif" instead of jpeg/png. Check Screenshot#2
 
 = Pagespeed insights still reports "serve next gen images" why? =
 
@@ -149,7 +150,7 @@ This setup won't provide any additional performance benefits.
 
 = Does this plugin work with all browsers? =
 
-You can check browser compatibility [here]("https://caniuse.com/#search=service%20workers") as of today there is 94.5% compatibility and growing.
+You can check browser compatibility [here]("https://caniuse.com/#search=service%20workers") as of today there is 95.12% compatibility and growing.
 As for the rest of the 5.5% this will work the same way it already used to.
 
 Any browser that supports Service Worker will support the image service.
@@ -178,8 +179,9 @@ and we be glad to investigate on your behalf.
 
 == Changelog ==
 = 1.1.1 =
-Fix some Noticed on error reporting
+Add AVIF Support
 Add html5 Doctype support for SlimCSS
+Fix a warning on error log
 
 = 1.1.0 =
 Added SlimCSS Feature.
