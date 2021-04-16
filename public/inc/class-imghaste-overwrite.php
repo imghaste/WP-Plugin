@@ -7,7 +7,7 @@
 * @access   private
 */
 
-class Imghaste_Overwite extends Imghaste_Public
+class Imghaste_Overwrite extends Imghaste_Public
 {
 
 	/**
