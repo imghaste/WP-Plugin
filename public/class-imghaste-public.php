@@ -194,7 +194,6 @@ class Imghaste_Public
 	}
 
 
-
 	/**
 	 * Asset function to get wordpress folder
 	 *
