@@ -1,5 +1,12 @@
 <?php
 
+/**
+* The Buffer is used to replace all sources to be served from the CDN in the DOM.
+* It is used instead of the Service Worker mainly to measure loading time
+* @since    1.0.0
+* @access   private
+*/
+
 class Imghaste_Buffer extends Imghaste_Public
 {
 
