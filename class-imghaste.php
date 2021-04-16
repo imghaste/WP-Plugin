@@ -230,6 +230,10 @@ class Imghaste
 				// Accept CH meta tag
 				$this->loader->add_action('wp_head', $plugin_public, 'imghaste_accept_ch');
 
+				//Replase src and srcset in img tags
+				$this->loader->add_filter('template_redirect', $plugin_public, 'imghaste_imgsrc_buffer_start');
+				$this->loader->add_filter('shutdown', $plugin_public, 'imghaste_imgsrc_buffer_end');
+
 				/*
 				* Implement Slim CSS functionality
 				*/
