@@ -474,7 +474,7 @@ function imghaste_field_pwa_start_url_cb() {
 			<!--  AMP Page As Start Page -->
 			<br><input type="checkbox" name="imghaste_options[start_url_amp]" id="imghaste_options[start_url_amp]" value="1" 
 			<?php if ( isset( $options['start_url_amp'] ) ) { checked( '1', $options['start_url_amp'] ); } ?>>
-			<label for="superpwa_settings[start_url_amp]"><?php _e('Use AMP version of the start page.', 'imghaste') ?></label>
+			<label for="imghaste_options[start_url_amp]"><?php _e('Use AMP version of the start page.', 'imghaste') ?></label>
 			<br>
 			
 			<!-- AMP for WordPress 0.6.2 doesn't support homepage, the blog index, and archive pages. -->
