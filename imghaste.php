@@ -19,7 +19,9 @@
  * Domain Path:       /languages
  */
 
-// If this file is called directly, abort.
+/**
+ * If this file is called directly, abort.
+ */
 if (!defined('WPINC')) {
 	die;
 }
@@ -29,12 +31,31 @@ if (!defined('WPINC')) {
  */
 define('IMGHASTE_VERSION', '1.1.1');
 
+/**
+ * Absolute path to the plugin directory. 
+ */
+if ( ! defined( 'IMGHASTE_PATH_ABS' ) ) {
+	define( 'IMGHASTE_PATH_ABS'	, plugin_dir_path( __FILE__ ) ); 
+}
+
+/**
+ * IMG Haste Plugin Path
+ */
+if ( ! defined( 'IMGHASTE_PATH_SRC' ) ) {
+	define( 'IMGHASTE_PATH_SRC'	, plugin_dir_url( __FILE__ ) ); 
+}
+
+/**
+ * Full path to the plugin file. 
+ */
+if ( ! defined( 'IMGHASTE_PLUGIN_FILE' ) ) {
+	define( 'IMGHASTE_PLUGIN_FILE', __FILE__ ); 
+}
 
 /**
  * Caching Directory for SlimCSS
  */
 define('SLIMCSS_CACHE_DIR', WP_CONTENT_DIR . "/cache/slimcss/");
-
 
 /**
  * The code that runs during plugin activation.
