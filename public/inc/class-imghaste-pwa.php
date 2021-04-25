@@ -208,7 +208,7 @@ function imghaste_get_bloginfo( $file = 'sw' ) {
 // Returns the Manifest filename.
 
 function imghaste_get_manifest_filename() {
-	return 'imghaste-manifest' . imghaste_multisite_filename_postfix() . '.json';
+	return 'imghaste-manifest' . imghaste_multisite_filename_postfix() . '.webmanifest';
 }
 
 
@@ -287,7 +287,6 @@ function imghaste_manifest( $arg = 'src' ) {
 		$manifest['start_url']        = strlen( imghaste_get_start_url( true ) )>2?user_trailingslashit(imghaste_get_start_url( true )) : imghaste_get_start_url( true );
 		$manifest['scope']            = strlen(imghaste_get_scope())>2? user_trailingslashit(imghaste_get_scope()) : imghaste_get_scope();
 
-
 	/**
 	 * Values that go in to Manifest JSON.
 	 *
@@ -307,7 +306,6 @@ function imghaste_generate_manifest() {
 	
 	// Get options
 	$options = imghaste_get_options();
-
 	
 	// Return true if dynamic file returns a 200 response.
 	if ( imghaste_file_exists( home_url( '/' ) . imghaste_get_manifest_filename() ) && defined( 'WP_CACHE' ) && ! WP_CACHE ) {
@@ -322,7 +320,7 @@ function imghaste_generate_manifest() {
 	}
 	
 	// Write the manfiest to disk.
-	if ( imghaste_put_contents( imghaste_manifest( 'abs' ), json_encode( imghaste_manifest_template() ) ) ) {
+	if ( imghaste_put_contents( imghaste_manifest( 'abs' ),  json_encode(imghaste_manifest_template()) ) ) {
 		
 		// set file status as satic file in database.
 		$options['is_static_manifest'] = 1;
@@ -378,10 +376,10 @@ function imghaste_get_pwa_icons() {
 		'src' 	=> $options['imghaste_field_pwa_app_icon'],
 							'sizes'	=> '192x192', // must be 192x192. Todo: use getimagesize($options['icon'])[0].'x'.getimagesize($options['icon'])[1] in the future
 							'type'	=> 'image/png', // must be image/png. Todo: use getimagesize($options['icon'])['mime']
-							'purpose'=> 'any maskable', // any maskable to support adaptive icons
+							//'purpose'=> 'any maskable', // any maskable to support adaptive icons
 						);
 	
-	// Splash screen icon - Added since 1.3
+	// Splash screen icon
 	if ( @$options['imghaste_field_pwa_splash_screen_icon'] != '' ) {
 		
 		$icons_array[] = array(
