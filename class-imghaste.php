@@ -132,12 +132,6 @@ class Imghaste
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-buffer.php';
 
 		/**
-		 * The class responsible to overwrite core funtions
-		 */
-		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-overwrite.php';
-
-
-		/**
 		 * The classes responsible for implementing Slim CSS
 		 */
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-slimcss.php';
@@ -203,6 +197,8 @@ class Imghaste
 		$service_worker = 'image-service.ih.js';
 
 		$plugin_public = new Imghaste_Public($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
+		$plugin_buffer = new Imghaste_Buffer($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
+		$plugin_slimcss = new Imghaste_Slimcss($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
 
 		//Check for Admin Pages
 		if (!is_admin()) {
@@ -210,10 +206,6 @@ class Imghaste
 			// Check for CDN Url
 			$options = get_option('imghaste_options');
 			if (isset($options['imghaste_field_cdn_url'])) {
-
-				/*
-				* Implement Core ImgHaste functionality with Service Worker
-				*/
 
 				// Add Service Worker Rewrite Rule
 				$this->loader->add_action('init', $plugin_public, 'imghaste_sw_rewrite');
@@ -229,6 +221,7 @@ class Imghaste
 
 				// Accept CH meta tag
 				$this->loader->add_action('wp_head', $plugin_public, 'imghaste_accept_ch');
+
 
 				//Replase src and srcset in img tags
 				$this->loader->add_filter('template_redirect', $plugin_public, 'imghaste_imgsrc_buffer_start');
@@ -250,26 +243,27 @@ class Imghaste
 				/*
 				* Implement Buffer rewrite functionality
 				*/
-
+        
 				//Check for Rewrite Enabled
 				if (isset($options['imghaste_field_rewrite'])) {
 					if ($options['imghaste_field_rewrite'] == 1) {
-						/* Core Overwrites */
-						$plugin_overwrite = new Imghaste_Overwrite($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
+
+						/* Core Rewrites */
 						//Change Attachment Url
-						$this->loader->add_filter('wp_get_attachment_url', $plugin_overwrite , 'imghaste_get_attachment_url');
+						$this->loader->add_filter('wp_get_attachment_url', $plugin_public, 'imghaste_get_attachment_url');
 						// Change Attachment Src
-						$this->loader->add_filter('wp_get_attachment_image_src',  $plugin_overwrite, 'imghaste_get_attachment_image_src');
+						$this->loader->add_filter('wp_get_attachment_image_src', $plugin_public, 'imghaste_get_attachment_image_src');
 						// Change Attachment SrcSet
-						$this->loader->add_filter('wp_calculate_image_srcset',  $plugin_overwrite, 'imghaste_calculate_image_srcset');
+						$this->loader->add_filter('wp_calculate_image_srcset', $plugin_public, 'imghaste_calculate_image_srcset');
+
 						// Change Image Url in Content - We do not use this for now
-						$this->loader->add_filter('the_content',  $plugin_overwrite, 'imghaste_get_the_content');
+						$this->loader->add_filter('the_content', $plugin_public, 'imghaste_get_the_content');
+
 						/* Buffer Rewrites */
-						$plugin_buffer = new Imghaste_Buffer($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
 						// Initiate Buffer
 						$this->loader->add_filter('template_redirect', $plugin_buffer, 'imghaste_buffer_start');
 						// End Buffer
-						$this->loader->add_filter('shutdown', $plugin_buffer, 'imghaste_buffer_end');  
+						$this->loader->add_filter('shutdown', $plugin_buffer, 'imghaste_buffer_end');
 					}
 				}
 
