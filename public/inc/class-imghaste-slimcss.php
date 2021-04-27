@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * Implements Slimcss funcionality. CSS is scanned and only needed styles remain
+ *
+* @since    1.1.0
+* @access   private
+*/
 class Imghaste_Slimcss extends Imghaste_Public
 {
 
@@ -24,12 +29,7 @@ class Imghaste_Slimcss extends Imghaste_Public
 		$this->cache = new SlimCache(SLIMCSS_CACHE_DIR, $this->cache_version);
 	}
 
-	/**
-	 * Implements Slimcss funcionality
-	 *
-	 * @since    1.1.0
-	 * @access   private
-	 */
+	//Inititae Slimcss
 	public function imghaste_slimcss()
 	{
 
