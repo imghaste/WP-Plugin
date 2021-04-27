@@ -94,7 +94,8 @@ function imghaste_section_status_check_cb(){
 		//Service Worker Test Runs on JS
 
 		//Origin Server Test
-		$options = get_option('imghaste_options');
+		$options = imghaste_get_options();
+
 		$OriginTestReq = array(
 			"cdn_url" => $options['imghaste_field_cdn_url'],
 			"origin" => get_site_url(),
@@ -113,6 +114,22 @@ function imghaste_section_status_check_cb(){
 			$origin_style = $error_style;
 		}
 
+		// Manifest check
+		$correct_manifest_message = $correct_icon . __('Manifest generated successfully. You can <a href="'.imghaste_manifest( 'src' ).'" target="_blank">See it here &rarr;</a>','imghaste');
+		$error_manifest_message = $error_icon . __('Manifest generation failed. <a href="%s" target="_blank">Fix it &rarr;</a>','imghaste');
+
+		if ( imghaste_file_exists( imghaste_manifest( 'src' ) ) || imghaste_generate_manifest() ) {
+
+			$pwa_message = $correct_manifest_message;
+			$pwa_style = $correct_style;
+
+		} else {
+
+			$pwa_message = $error_manifest_message;
+			$pwa_style = $error_style;
+
+		}
+
 		?>
 		<input id="imghaste_localhost_check" type="hidden" value="false" name="imghaste_localhost_check">
 		<table class="form-table" role="presentation">
@@ -129,6 +146,10 @@ function imghaste_section_status_check_cb(){
 					<th scope="row"><label><?php _e('Check: Service Worker','imghaste'); ?></label></th>
 					<td id="service-worker-test"><?php echo __('Checking the Service Worker status...', 'imghaste'); ?></td>
 				</tr>
+				<tr class="imghaste_row">
+					<th scope="row"><label><?php _e('Check: Manifest','imghaste'); ?></label></th>
+					<td id="manifest-generated-test " style="<?php echo $pwa_style; ?>"><?php echo $pwa_message; ?></td>
+				</tr>
 			</tbody>
 		</table>
 		<?php
@@ -140,7 +161,8 @@ function imghaste_section_status_check_cb(){
 */
 function imghaste_field_cdn_url_cb( $args ) {
 
-	$options = get_option( 'imghaste_options' );
+	$options = imghaste_get_options();
+
 	if(isset($_POST['imghaste_field_cdn_url'])){
 		$field_value = esc_url($_POST('imghaste_field_cdn_url'));
 	} else {
@@ -164,7 +186,7 @@ function imghaste_field_cdn_url_cb( $args ) {
 */
 function imghaste_field_rewrite_cb( $args ) {
 
-	$options = get_option( 'imghaste_options' );
+	$options = imghaste_get_options();
 
 	$current_checkbox = isset($options['imghaste_field_rewrite']) ? $options['imghaste_field_rewrite'] : '0';
 	$checked_attribute = '';
@@ -196,7 +218,7 @@ function imghaste_field_rewrite_cb( $args ) {
 
 function imghaste_field_slimcss_cb( $args ) {
 
-	$options = get_option( 'imghaste_options' );
+	$options = imghaste_get_options();
 
 	$current_checkbox = isset($options['imghaste_field_slimcss']) ? $options['imghaste_field_slimcss'] : '0';
 	$checked_attribute = '';
@@ -225,7 +247,7 @@ function imghaste_field_slimcss_cb( $args ) {
 
 function imghaste_field_slimcss_buffer_cb( $args ) {
 
-	$options = get_option( 'imghaste_options' );
+	$options = imghaste_get_options();
 
 	$current_checkbox = isset($options['imghaste_field_slimcss_buffer']) ? $options['imghaste_field_slimcss_buffer'] : '0';
 	$checked_attribute = '';
@@ -252,7 +274,7 @@ function imghaste_field_slimcss_buffer_cb( $args ) {
 // Purge SlimCss
 function imghaste_field_purge_slimcss_cb($args){
 
-	$options = get_option('imghaste_options');
+	$options = imghaste_get_options();
 
 	//Get & initiate Purge Version
 	$current_purgeversion = 1;
@@ -267,4 +289,5 @@ function imghaste_field_purge_slimcss_cb($args){
 		<?php echo __('Purge the SlimCSS cache. Each url will be reanalyzed and compiled', 'imghaste'); ?>
 	</p>
 
-<?php } ?>
+	<?php 
+}

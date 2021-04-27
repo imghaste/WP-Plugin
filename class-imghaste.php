@@ -118,6 +118,10 @@ class Imghaste
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path(__FILE__) . 'admin/class-imghaste-admin.php';
+		//Main Section display assets
+		require_once plugin_dir_path( __FILE__ ).'admin/partials/imghaste-admin-display.php';
+		//PWA Section display assets
+		require_once plugin_dir_path( __FILE__ ).'admin/partials/imghaste-admin-pwa.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -141,6 +145,11 @@ class Imghaste
 		 * The classes responsible for implementing Slim CSS
 		 */
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-slimcss.php';
+
+		/**
+		 * The classes responsible for implementing PWA
+		 */
+		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-pwa.php';
 
 		$this->loader = new Imghaste_Loader();
 
@@ -183,7 +192,7 @@ class Imghaste
 		//Add Options Page
 		$this->loader->add_action('admin_menu', $plugin_admin, 'imghaste_options_page');
 		//Sanitazie Settings
-		$this->loader->add_filter('pre_update_option_imghaste_options', $plugin_admin, 'imghaste_update_field_imghaste_field_cdn_url', 10, 2);
+		//$this->loader->add_filter('pre_update_option_imghaste_options', $plugin_admin, 'imghaste_update_field_imghaste_field_cdn_url', 10, 2);
 		//Add notice if the settings are incomplete
 		$this->loader->add_action('admin_notices', $plugin_admin, 'imghaste_incomplete_settings_notice');
 
