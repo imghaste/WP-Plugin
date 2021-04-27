@@ -118,7 +118,10 @@ class Imghaste
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path(__FILE__) . 'admin/class-imghaste-admin.php';
+		//Main Section display assets
 		require_once plugin_dir_path( __FILE__ ).'admin/partials/imghaste-admin-display.php';
+		//PWA Section display assets
+		require_once plugin_dir_path( __FILE__ ).'admin/partials/imghaste-admin-pwa.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
@@ -138,7 +141,7 @@ class Imghaste
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-slimcss.php';
 
 		/**
-		 * The classes responsible for implementing Slim CSS
+		 * The classes responsible for implementing PWA
 		 */
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-pwa.php';
 
