@@ -8,21 +8,21 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	} else {
 		var service_worker_url = window.location.origin + "/image-service.ih.js"
 		fetch(service_worker_url, {redirect: 'manual', cache: "no-store"})
-		.then(function (response) {
-			let contentType = response.headers.get("content-type");
-			if (contentType && contentType.indexOf("/javascript") !== -1 && response.status == 200) {
-				setTimeout(function () {
-					serviceWorkerStatus.style.color = 'green'
-					serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-yes"></span> The Service Worker is active'
-				}, 1000)
-			} else {
-				setTimeout(function () {
-					serviceWorkerStatus.style.color = 'red'
-					serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-no"></span> The Service Worker is not active. Please Consult Support for False Negatives'
-				}, 1000)
+			.then(function (response) {
+				let contentType = response.headers.get("content-type");
+				if (contentType && contentType.indexOf("/javascript") !== -1 && response.status == 200) {
+					setTimeout(function () {
+						serviceWorkerStatus.style.color = 'green'
+						serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-yes"></span> The Service Worker is active'
+					}, 1000)
+				} else {
+					setTimeout(function () {
+						serviceWorkerStatus.style.color = 'red'
+						serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-no"></span> The Service Worker is not active. Please Consult Support for False Negatives'
+					}, 1000)
 
-			}
-		})
+				}
+			})
 	}
 
 	//Purge SlimCSS
@@ -35,42 +35,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			document.getElementById("submit").click();
 		});
 	}
-
-});
-
-
-jQuery(document).ready(function($){
-// PWA Fields
- 	$('.imghaste-colorpicker').wpColorPicker();	// Color picker
-	$('.imghaste-pwa-icon-upload').click(function(e) {	// Application Icon upload
-		e.preventDefault();
-		var imghaste_media_uploader = wp.media({
-			title: 'Application Icon',
-			button: {
-				text: 'Select Icon'
-			},
-			multiple: false  // Set this to true to allow multiple files to be selected
-		})
-		.on('select', function() {
-			var attachment = imghaste_media_uploader.state().get('selection').first().toJSON();
-			$('.imghaste-icon').val(attachment.url);
-		})
-		.open();
-	});
-	$('.imghaste-pwa-splash-icon-upload').click(function(e) {	// Splash Screen Icon upload
-		e.preventDefault();
-		var imghaste_media_uploader = wp.media({
-			title: 'Splash Screen Icon',
-			button: {
-				text: 'Select Icon'
-			},
-			multiple: false  // Set this to true to allow multiple files to be selected
-		})
-		.on('select', function() {
-			var attachment = imghaste_media_uploader.state().get('selection').first().toJSON();
-			$('.imghaste-splash-icon').val(attachment.url);
-		})
-		.open();
-	});
 
 });
