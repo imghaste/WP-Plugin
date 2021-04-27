@@ -195,6 +195,69 @@ class Imghaste_Public
 
 
 	/**
+	 * Small Buffer to replace src and srcset in images with data-src και data-srcset
+	 *  to optimize the image load from the Service Worker
+	 *
+	 * @since    1.1.2
+	 */
+
+	//Start Buffer
+	function imghaste_imgsrc_buffer_start()
+	{
+		ob_start(array($this, 'imghaste_imgsrc_buffer_replace'));
+	}
+	//End Buffer
+	function imghaste_imgsrc_buffer_end()
+	{
+		if (ob_get_length()) {
+			ob_end_flush();
+		}
+	}
+	//Run Buffer
+	function imghaste_imgsrc_buffer_replace($content)
+	{
+			
+		if (is_admin() || empty($content)) {
+			return $content;
+		}
+		if (!class_exists('DOMDocument', false)) {
+			return $content;
+		}
+		
+		//Load HTML to php
+		$doc = new DOMDocument(null, 'UTF-8');
+		@$doc->loadHtml($content);
+
+		//Replace Src in Image Tag
+		$images = $doc->getElementsByTagName('img');
+		foreach ($images as $img) {
+			//Replace Img Src
+			$url = $img->getAttribute('src');
+			$img->setAttribute('data-src', $url);
+			$img->removeAttribute('src');
+			//Replace Img Srcset
+			$srcset = $img->getAttribute('srcset');
+			$img->setAttribute('data-srcset', $url);
+			$img->removeAttribute('srcset');
+		}
+
+		//Replace Src in Picture Tag
+		$pictures = $doc->getElementsByTagName('picture');
+		foreach ($pictures as $picture) {
+			//Replace Src in Sources
+			$sources = $picture->getElementsByTagName('source');
+			foreach ($sources as $source) {
+				$srcset = $source->getAttribute('srcset');
+				$source->setAttribute('data-srcset',$srcset);
+				$source->removeAttribute('srcset');
+			}
+		}
+		$doc->normalizeDocument();
+		$buffered_content = @$doc->saveHTML($doc->documentElement);
+			return '<!doctype html>' . $buffered_content;
+	}
+
+	/**
 	 * Asset function to get wordpress folder
 	 *
 	 * @since    1.0.0
