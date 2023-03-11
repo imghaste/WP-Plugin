@@ -18,7 +18,9 @@ class Imghaste_Buffer extends Imghaste_Public
 	public function imghaste_buffer_replace($content)
 	{
 
-		if (is_admin() || empty($content)) {
+		global $wp;
+		
+		if (is_admin() || empty($content) || is_feed() || $wp->request=='robots.txt') {
 			return $content;
 		}
 
