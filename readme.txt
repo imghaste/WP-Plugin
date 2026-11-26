@@ -3,7 +3,7 @@ Contributors: imghaste, Sociality
 Donate link: https://www.imghaste.com/
 Tags: AVIF, WebP, CDN, Service Worker, Client Hints
 Requires at least: 3.0.1
-Tested up to: 8.2.0
+Tested up to: 7.1.5
 Stable tag: trunk
 Requires PHP: 5.4
 License: GPLv2 or later
