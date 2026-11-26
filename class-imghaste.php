@@ -69,7 +69,7 @@ class Imghaste
 	 */
 	public function __construct()
 	{
-		$this->version = '1.1.1';
+		$this->version = '1.2.0';
 		if (defined('IMGHASTE_VERSION')) {
 			$this->version = IMGHASTE_VERSION;
 		}
@@ -114,6 +114,13 @@ class Imghaste
 		 */
 		require_once plugin_dir_path(__FILE__) . 'includes/class-imghaste-i18n.php';
 
+
+		/**
+		 * This class includes general helpers
+		 */
+		require_once plugin_dir_path(__FILE__) . 'includes/class-imghaste-helpers.php';
+
+
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
@@ -132,9 +139,20 @@ class Imghaste
 		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-buffer.php';
 
 		/**
-		 * The classes responsible for implementing Slim CSS
+		 * The class responsible to overwrite core funtions
 		 */
-		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-slimcss.php';
+		require_once plugin_dir_path(__FILE__) . 'public/inc/class-imghaste-overwrite.php';
+
+
+		/**
+		 * The class responsible for implementing Slim CSS
+		 */
+		require_once plugin_dir_path(__FILE__) . 'public/slimcss/class-imghaste-slimcss.php';
+
+		/**
+		 * The class responsible for implementing PWA
+		 */
+		require_once plugin_dir_path(__FILE__) . 'public/pwa/class-imghaste-pwa.php';
 
 		$this->loader = new Imghaste_Loader();
 
@@ -176,8 +194,6 @@ class Imghaste
 		$this->loader->add_action('admin_init', $plugin_admin, 'imghaste_settings_init');
 		//Add Options Page
 		$this->loader->add_action('admin_menu', $plugin_admin, 'imghaste_options_page');
-		//Sanitazie Settings
-		$this->loader->add_filter('pre_update_option_imghaste_options', $plugin_admin, 'imghaste_update_field_imghaste_field_cdn_url', 10, 2);
 		//Add notice if the settings are incomplete
 		$this->loader->add_action('admin_notices', $plugin_admin, 'imghaste_incomplete_settings_notice');
 
@@ -197,8 +213,6 @@ class Imghaste
 		$service_worker = 'image-service.ih.js';
 
 		$plugin_public = new Imghaste_Public($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
-		$plugin_buffer = new Imghaste_Buffer($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
-		$plugin_slimcss = new Imghaste_Slimcss($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
 
 		//Check for Admin Pages
 		if (!is_admin()) {
@@ -206,6 +220,10 @@ class Imghaste
 			// Check for CDN Url
 			$options = get_option('imghaste_options');
 			if (isset($options['imghaste_field_cdn_url'])) {
+
+				/*
+				* Implement Core ImgHaste functionality with Service Worker
+				*/
 
 				// Add Service Worker Rewrite Rule
 				$this->loader->add_action('init', $plugin_public, 'imghaste_sw_rewrite');
@@ -222,25 +240,44 @@ class Imghaste
 				// Accept CH meta tag
 				$this->loader->add_action('wp_head', $plugin_public, 'imghaste_accept_ch');
 
-				// SlimCSS
-				$this->loader->add_action('init', $plugin_slimcss, 'imghaste_slimcss');
+				//Replase src and srcset in img tags
+				//$this->loader->add_filter('template_redirect', $plugin_public, 'imghaste_imgsrc_buffer_start');
+				//$this->loader->add_filter('shutdown', $plugin_public, 'imghaste_imgsrc_buffer_end');
+
+				/*
+				* Implement Slim CSS functionality
+				*/
+
+				//Check for SlimCSS enabled
+				/*
+				if (isset($options['imghaste_field_slimcss'])) {
+					if ($options['imghaste_field_slimcss'] == 1) {
+						$plugin_slimcss = new Imghaste_Slimcss($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
+						//Run SlimCSS
+						$this->loader->add_action('init', $plugin_slimcss, 'imghaste_slimcss');
+					}
+				}
+				*/
+				
+				/*
+				* Implement Buffer rewrite functionality
+				*/
 
 				//Check for Rewrite Enabled
 				if (isset($options['imghaste_field_rewrite'])) {
 					if ($options['imghaste_field_rewrite'] == 1) {
-
-						/* Core Rewrites */
+						/* Core Overwrites */
+						$plugin_overwrite = new Imghaste_Overwrite($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
 						//Change Attachment Url
-						$this->loader->add_filter('wp_get_attachment_url', $plugin_public, 'imghaste_get_attachment_url');
+						$this->loader->add_filter('wp_get_attachment_url', $plugin_overwrite, 'imghaste_get_attachment_url');
 						// Change Attachment Src
-						$this->loader->add_filter('wp_get_attachment_image_src', $plugin_public, 'imghaste_get_attachment_image_src');
+						$this->loader->add_filter('wp_get_attachment_image_src', $plugin_overwrite, 'imghaste_get_attachment_image_src');
 						// Change Attachment SrcSet
-						$this->loader->add_filter('wp_calculate_image_srcset', $plugin_public, 'imghaste_calculate_image_srcset');
-
+						$this->loader->add_filter('wp_calculate_image_srcset', $plugin_overwrite, 'imghaste_calculate_image_srcset');
 						// Change Image Url in Content - We do not use this for now
-						$this->loader->add_filter('the_content', $plugin_public, 'imghaste_get_the_content');
-
+						$this->loader->add_filter('the_content', $plugin_overwrite, 'imghaste_get_the_content');
 						/* Buffer Rewrites */
+						$plugin_buffer = new Imghaste_Buffer($this->get_plugin_name(), $this->get_version(), $supported_extensions, $service_worker);
 						// Initiate Buffer
 						$this->loader->add_filter('template_redirect', $plugin_buffer, 'imghaste_buffer_start');
 						// End Buffer
@@ -253,6 +290,25 @@ class Imghaste
 					if ($options['imghaste_field_disable_srcset_sizes'] == 1) {
 						$this->loader->add_filter('max_srcset_image_width', $plugin_public, 'imghaste_disable_wp_responsive_images');
 						$this->loader->add_filter('intermediate_image_sizes_advanced', $plugin_public, 'disable_wp_responsive_image_sizes');
+					}
+				}
+
+				/*
+				* Implement PWA funtionality
+				*/
+
+				//Check for PWA enabled
+				if (isset($options['imghaste_field_pwa'])) {
+					if ($options['imghaste_field_pwa'] == 1) {
+						if (isset($options['imghaste_field_pwa_appname'])) {
+							$plugin_pwa = new Imghaste_PWA();
+							// Add PWA Manifest Rewrite Rule
+							$this->loader->add_action('init', $plugin_pwa, 'imghaste_pwa_rewrite');
+							// Generate Manifest File
+							$this->loader->add_action('parse_request', $plugin_pwa, 'imghaste_pwa_generate');
+							//Add manifest link to header
+							$this->loader->add_action('wp_head', $plugin_pwa, 'imghaste_add_manifest_to_wp_head', 0);
+						}
 					}
 				}
 			}

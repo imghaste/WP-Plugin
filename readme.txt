@@ -3,7 +3,7 @@ Contributors: imghaste, Sociality
 Donate link: https://www.imghaste.com/
 Tags: AVIF, WebP, CDN, Service Worker, Client Hints
 Requires at least: 3.0.1
-Tested up to: 5.6.0
+Tested up to: 7.1.5
 Stable tag: trunk
 Requires PHP: 5.4
 License: GPLv2 or later
@@ -162,11 +162,14 @@ Oh yes!
 
 = Do you offer a cname for SEO? =
 
-No, We do better we offer the service on your own domain.
+Yes, due to customer demand we do offer cname support
+However, We do offer much better than CNAME on our default setup
+We offer the service on your own domain.
 
 = My theme does not provide info for client hints =
 
 That can be even better in some cases.
+In that case, the resizing options will be limited to Device
 Contact support, to find out about a hybrid solution called Smart Hints by imghaste
 and we be glad to investigate on your behalf.
 
@@ -176,6 +179,15 @@ and we be glad to investigate on your behalf.
 1. How can we Improve your website speed. You can check before installing
 2. Verify Plugin works.
 
+== Changelog ==
+= 1.3.0 =
+Added php 8.2 support
+
+== Changelog ==
+= 1.2.0 =
+Added PWA Support
+Added CNAME Support
+Decommission of SlimCSS in favor of new product
 
 == Changelog ==
 = 1.1.1 =

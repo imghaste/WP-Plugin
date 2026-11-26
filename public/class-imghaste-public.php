@@ -50,14 +50,6 @@ class Imghaste_Public
 	protected $sw_name;
 
 	/**
-	 * The filename of the Service Woker
-	 * @since    1.0.2
-	 * @access   private
-	 * @var      string $scope_name The path under which  WP is running for example /blog/
-	 */
-	private $scope_name;
-
-	/**
 	 * Initialize the class and set its properties.
 	 * @param string $plugin_name The name of the plugin.
 	 * @param string $version The version of this plugin.
@@ -131,7 +123,7 @@ class Imghaste_Public
 
 		$domains = ['imghaste.com', $domain, $cdn_url];
 		$domains = array_unique($domains);
-		$policies = ['width','downlink',];
+		$policies = ['width', 'downlink',];
 
 		$feature_policy = "ch-width *;";
 
@@ -140,9 +132,10 @@ class Imghaste_Public
 
 	}
 
-	protected function get_top_level_domain($domain){
-		$tld = preg_replace('/.*\.([a-zA-Z]+)$/','$1',$domain);
-		return trim(preg_replace('/.*(([\.\/][a-zA-Z]{2,}){'.((substr_count($domain, '.') <= 2 && mb_strlen( $tld) != 2) ? '2,3' : '3,4').'})/im','$1',$domain),'./');
+	protected function get_top_level_domain($domain)
+	{
+		$tld = preg_replace('/.*\.([a-zA-Z]+)$/', '$1', $domain);
+		return trim(preg_replace('/.*(([\.\/][a-zA-Z]{2,}){' . ((substr_count($domain, '.') <= 2 && mb_strlen($tld) != 2) ? '2,3' : '3,4') . '})/im', '$1', $domain), './');
 	}
 
 	/**
@@ -174,7 +167,9 @@ class Imghaste_Public
 		$i = date('i');
 		$i = intval($i / 10);
 		$d = date('Ymd-H-') . $i;
-		wp_enqueue_script('imghaste-register-sw', "https://cdn.imghaste.com/sw/sdk.js?f={$this->sw_name}&pv=v{$this->version}-{$d}", [], null, true);
+		$options = get_option('imghaste_options');
+
+		wp_enqueue_script('imghaste-register-sw', "{$options['imghaste_field_cdn_url']}sw/sdk.js?f={$this->sw_name}&pv=v{$this->version}-{$d}", [], null, true);
 		//This is for local host Developement but you need SSL
 		/*wp_enqueue_script( 'imghaste-register-sw', 'https://cdn.imghaste.com/sw/sdk.js?f='.$this->imghaste_get_base_folder().$this->sw_name.'&s='.$this->imghaste_get_base_folder(),array(), null, true );*/
 	}
@@ -193,83 +188,70 @@ class Imghaste_Public
 		<?php
 	}
 
-	/**
-	 * Overide core function wp_get_attachment_url to get image from CDN.
-	 * https://developer.wordpress.org/reference/functions/wp_get_attachment_url/
-	 * @since    1.0.0
-	 */
-	public function imghaste_get_attachment_url($image_url)
-	{
-		if (is_admin()) {
-			return $image_url;
-		}
-		//Replace URL
-		return $this->imghaste_get_remote_image_url($image_url);
-	}
 
 	/**
-	 * Overide core function wp_get_attachment_image_src to get image from CDN.
-	 * https://developer.wordpress.org/reference/functions/wp_get_attachment_image_src/
-	 * @since    1.0.0
+	 * Small Buffer to replace src and srcset in images with data-src και data-srcset
+	 *  to optimize the image load from the Service Worker
+	 *
+	 * @since    1.1.2
 	 */
-	public function imghaste_get_attachment_image_src($image)
+
+	//Start Buffer
+	function imghaste_imgsrc_buffer_start()
 	{
-		if (is_admin()) {
-			return $image;
-		}
-		//Replace url
-		$image[0] = $this->imghaste_get_remote_image_url($image[0]);
-		return $image;
+		ob_start(array($this, 'imghaste_imgsrc_buffer_replace'));
 	}
 
-	/**
-	 * Overide core function wp_calculate_image_srcset to get image from CDN.
-	 * https://developer.wordpress.org/reference/functions/wp_calculate_image_srcset/
-	 * @since    1.0.0
-	 */
-	public function imghaste_calculate_image_srcset($sources)
+	//End Buffer
+	function imghaste_imgsrc_buffer_end()
 	{
-		if (is_admin()) {
-			return $sources;
+		if (ob_get_length()) {
+			ob_end_flush();
 		}
-		//Replace Sources
-		foreach ($sources as &$source) {
-			if (!file_exists($source['url'])) {
-				$source['url'] = $this->imghaste_get_remote_image_url($source['url']);
-			}
-		}
-		return $sources;
 	}
 
-	/**
-	 * Apply Hook 'the_content' to replace all images sources from CDN
-	 * https://developer.wordpress.org/reference/functions/the_content/
-	 * @since    1.0.0
-	 */
-	public function imghaste_get_the_content($content)
+	//Run Buffer
+	function imghaste_imgsrc_buffer_replace($content)
 	{
 
 		if (is_admin() || empty($content)) {
 			return $content;
 		}
-
-		//Load HTML to php
-		$doc = new DOMDocument();
-		libxml_use_internal_errors(true);
-		@$doc->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES'));
-		libxml_clear_errors();
-
-		//Replace Image Src
-		$images = $doc->getElementsByTagName('img');
-
-		foreach ($images as $img) {
-			$url = $img->getAttribute('src');
-			$url = $this->imghaste_get_remote_image_url($url);
-			$img->setAttribute('src', $url);
+		if (!class_exists('DOMDocument', false)) {
+			return $content;
 		}
 
+		//Load HTML to php
+		$doc = new DOMDocument(null, 'UTF-8');
+		@$doc->loadHtml($content);
 
-		return $doc->saveHTML();
+		//Replace Src in Image Tag
+		$images = $doc->getElementsByTagName('img');
+		foreach ($images as $img) {
+			//Replace Img Src
+			$url = $img->getAttribute('src');
+			$img->setAttribute('data-src', $url);
+			$img->removeAttribute('src');
+			//Replace Img Srcset
+			$srcset = $img->getAttribute('srcset');
+			$img->setAttribute('data-srcset', $url);
+			$img->removeAttribute('srcset');
+		}
+
+		//Replace Src in Picture Tag
+		$pictures = $doc->getElementsByTagName('picture');
+		foreach ($pictures as $picture) {
+			//Replace Src in Sources
+			$sources = $picture->getElementsByTagName('source');
+			foreach ($sources as $source) {
+				$srcset = $source->getAttribute('srcset');
+				$source->setAttribute('data-srcset', $srcset);
+				$source->removeAttribute('srcset');
+			}
+		}
+		$doc->normalizeDocument();
+		$buffered_content = @$doc->saveHTML($doc->documentElement);
+		return '<!doctype html>' . $buffered_content;
 	}
 
 	/**
@@ -295,7 +277,7 @@ class Imghaste_Public
 
 	public function imghaste_get_site_url()
 	{
-		return get_site_url().'/';
+		return get_site_url() . '/';
 	}
 
 
@@ -313,8 +295,11 @@ class Imghaste_Public
 		//Check if image is not hosted in the this domain
 		$image_url_parsed = parse_url($image_url);
 		$root_site_url_parsed = parse_url($root_site_url);
-		if (!$image_url_parsed['host'] == $root_site_url_parsed['host']) {
-			return $image_url;
+
+		if (isset($image_url_parsed['host']) && isset($root_site_url_parsed['host'])) {
+			if (!$image_url_parsed['host'] == $root_site_url_parsed['host']) {
+				return $image_url;
+			}
 		}
 
 		//Check image if is accepted extensions
