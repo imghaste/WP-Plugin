@@ -8,21 +8,21 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	} else {
 		var service_worker_url = window.location.origin + "/image-service.ih.js"
 		fetch(service_worker_url, {redirect: 'manual', cache: "no-store"})
-			.then(function (response) {
-				let contentType = response.headers.get("content-type");
-				if (contentType && contentType.indexOf("/javascript") !== -1 && response.status == 200) {
-					setTimeout(function () {
-						serviceWorkerStatus.style.color = 'green'
-						serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-yes"></span> The Service Worker is active'
-					}, 1000)
-				} else {
-					setTimeout(function () {
-						serviceWorkerStatus.style.color = 'red'
-						serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-no"></span> The Service Worker is not active. Please Consult Support for False Negatives'
-					}, 1000)
+		.then(function (response) {
+			let contentType = response.headers.get("content-type");
+			if (contentType && contentType.indexOf("/javascript") !== -1 && response.status == 200) {
+				setTimeout(function () {
+					serviceWorkerStatus.style.color = 'green'
+					serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-yes"></span> The Service Worker is active'
+				}, 1000)
+			} else {
+				setTimeout(function () {
+					serviceWorkerStatus.style.color = 'red'
+					serviceWorkerStatus.innerHTML = '<span class="dashicons dashicons-no"></span> The Service Worker is not active. Please Consult Support for False Negatives'
+				}, 1000)
 
-				}
-			})
+			}
+		})
 	}
 
 	//Purge SlimCSS
